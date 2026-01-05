@@ -65,7 +65,11 @@
     "tryAgain": "Try Again",
     "runSetup": "Ejecutar Configuración",
     "setupHelpText": "{{agent}} no está configurado correctamente. Haz clic en 'Ejecutar Configuración' para instalarlo e iniciar sesión.",
-    "devScriptMissingTooltip": "To start the dev server, add a dev script to this project"
+    "devScriptMissingTooltip": "To start the dev server, add a dev script to this project",
+    "tokenUsage": {
+      "title": "Uso de contexto",
+      "tokens": "tokens"
+    }
   },
   "stopShareDialog": {
     "title": "Detener uso compartido de la tarea",
