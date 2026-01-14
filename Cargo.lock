@@ -3001,7 +3001,6 @@ dependencies = [
  "sentry",
  "serde_json",
  "services",
- "shlex",
  "sqlx",
  "tempfile",
  "thiserror 2.0.17",
