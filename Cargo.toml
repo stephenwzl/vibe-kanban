@@ -11,6 +11,9 @@ members = [
     "crates/remote",
     "crates/review"
 ]
+exclude = [
+    "frontend/src-tauri"
+]
 
 [workspace.dependencies]
 tokio = { version = "1.0", features = ["full"] }
