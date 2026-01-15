@@ -85,3 +85,9 @@ dev_assets
 vibe-kanban-cloud/
 
 .jj
+
+# Claude
+.claude/
+
+# Spec workflow
+.spec-workflow/
