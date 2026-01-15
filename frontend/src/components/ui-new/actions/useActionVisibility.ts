@@ -6,7 +6,6 @@ import { useUserSystem } from '@/components/ConfigProvider';
 import { useDevServer } from '@/hooks/useDevServer';
 import { useBranchStatus } from '@/hooks/useBranchStatus';
 import { useExecutionProcessesContext } from '@/contexts/ExecutionProcessesContext';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
 import type { Workspace, Merge } from 'shared/types';
 import type {
   ActionVisibilityContext,
@@ -33,8 +32,6 @@ export function useActionVisibilityContext(): ActionVisibilityContext {
     useDevServer(workspaceId);
   const { data: branchStatus } = useBranchStatus(workspaceId);
   const { isAttemptRunningVisible } = useExecutionProcessesContext();
-  // Mobile detection (< 640px is Tailwind's sm breakpoint)
-  const isMobile = useMediaQuery('(max-width: 639px)');
 
   return useMemo(() => {
     // Compute isAllDiffsExpanded
@@ -69,7 +66,6 @@ export function useActionVisibilityContext(): ActionVisibilityContext {
       isLeftMainPanelVisible: layout.isLeftMainPanelVisible,
       isRightSidebarVisible: layout.isRightSidebarVisible,
       isCreateMode,
-      isMobile,
       hasWorkspace: !!workspace,
       workspaceArchived: workspace?.archived ?? false,
       hasDiffs: diffPaths.length > 0,
@@ -90,7 +86,6 @@ export function useActionVisibilityContext(): ActionVisibilityContext {
     layout.isLeftMainPanelVisible,
     layout.isRightSidebarVisible,
     isCreateMode,
-    isMobile,
     workspace,
     repos,
     diffPaths,
