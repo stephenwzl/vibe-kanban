@@ -24,7 +24,9 @@ pub fn run() {
 
             // 自动启动 Sidecar（开发模式和生产模式都启动）
             if let Some(window) = app.get_webview_window("main") {
+                // 先获取 state 的克隆，避免借用问题
                 let state = window.state::<AppState>();
+                let window_clone = window.clone();
 
                 // 在后台启动 sidecar
                 std::thread::spawn(move || {
@@ -33,13 +35,13 @@ pub fn run() {
                         Ok(port) => {
                             tracing::info!("Sidecar auto-started on port {}", port);
                             if let Some(port) = manager.port() {
-                                let _ = window.emit("sidecar-ready", port);
+                                let _ = window_clone.emit("sidecar-ready", port);
                             }
                         }
                         Err(e) => {
                             tracing::error!("Failed to auto-start sidecar: {}", e);
                             // 通知前端启动失败
-                            let _ = window.emit("sidecar-error", e.to_string());
+                            let _ = window_clone.emit("sidecar-error", e.to_string());
                         }
                     }
                 });
