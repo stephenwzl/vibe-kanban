@@ -7,7 +7,7 @@ mod error;
 
 use tauri::{Manager, Emitter};
 use crate::commands::AppState;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 fn main() {
     run()
@@ -25,8 +25,8 @@ pub fn run() {
 
             // 获取 state 的 Arc，然后提取内部的 Arc<Mutex<SidecarManager>>
             let state = app.state::<AppState>();
-            let app_state_arc = state.inner().clone();
-            let sidecar_arc = Arc::clone(&app_state_arc.sidecar);
+            let app_state_arc: Arc<AppState> = state.inner().clone();
+            let sidecar_arc: Arc<Mutex<sidecar::SidecarManager>> = Arc::clone(&app_state_arc.sidecar);
 
             // 自动启动 Sidecar（开发模式和生产模式都启动）
             if let Some(window) = app.get_webview_window("main") {
@@ -44,7 +44,8 @@ pub fn run() {
                         }
                         Err(e) => {
                             tracing::error!("Failed to auto-start sidecar: {}", e);
-                            let _ = window_clone.emit("sidecar-error", e.to_string());
+                            let error_msg: String = e.to_string();
+                            let _ = window_clone.emit("sidecar-error", error_msg);
                         }
                     }
                 });
