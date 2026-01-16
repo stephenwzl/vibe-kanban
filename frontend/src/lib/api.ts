@@ -94,6 +94,7 @@ import {
 } from 'shared/types';
 import type { WorkspaceWithSession } from '@/types/attempt';
 import { createWorkspaceWithSession } from '@/types/attempt';
+import { getApiUrl } from './api-config';
 
 export class ApiError<E = unknown> extends Error {
   public status?: number;
@@ -118,7 +119,10 @@ const makeRequest = async (url: string, options: RequestInit = {}) => {
     headers.set('Content-Type', 'application/json');
   }
 
-  return fetch(url, {
+  // 转换相对路径为完整 URL（支持 Tauri Sidecar 动态端口）
+  const fullUrl = getApiUrl(url);
+
+  return fetch(fullUrl, {
     ...options,
     headers,
   });
@@ -1053,7 +1057,7 @@ export const imagesApi = {
     const formData = new FormData();
     formData.append('image', file);
 
-    const response = await fetch('/api/images/upload', {
+    const response = await fetch(getApiUrl('/api/images/upload'), {
       method: 'POST',
       body: formData,
       credentials: 'include',
@@ -1075,7 +1079,7 @@ export const imagesApi = {
     const formData = new FormData();
     formData.append('image', file);
 
-    const response = await fetch(`/api/images/task/${taskId}/upload`, {
+    const response = await fetch(getApiUrl(`/api/images/task/${taskId}/upload`), {
       method: 'POST',
       body: formData,
       credentials: 'include',

@@ -11,6 +11,7 @@ import posthog from 'posthog-js';
 import { PostHogProvider } from 'posthog-js/react';
 // Import modal type definitions
 import './types/modals';
+import { ServerStatusBanner } from './components/ServerStatusBanner';
 
 import {
   useLocation,
@@ -72,6 +73,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         >
           <ClickToComponent />
           <VibeKanbanWebCompanion />
+          <ServerStatusBanner />
           <App />
           {/*<TanStackDevtools plugins={[FormDevtoolsPlugin()]} />*/}
           {/* <ReactQueryDevtools initialIsOpen={false} /> */}
