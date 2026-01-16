@@ -7,7 +7,7 @@
 import { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
-import { isTauri, isDev, setSidecarPort } from '../lib/api-config';
+import { isTauri, setSidecarPort } from '../lib/api-config';
 
 /**
  * 服务器状态类型
@@ -41,16 +41,13 @@ export function useServerStatus(): ServerStatusState {
       return;
     }
 
-    // 开发模式: 使用 Vite 代理，服务器已就绪
-    if (isDev()) {
-      setState({ status: 'ready', port: null });
-      return;
-    }
+    // Tauri 环境（开发模式和生产模式）都使用 Sidecar
+    // 初始状态为 starting，等待 Sidecar 启动
+    setState({ status: 'starting', port: null });
 
-    // 生产模式: 监听 sidecar 启动事件
+    // 监听 sidecar 就绪事件
     const unlistenPromise = listen<number>('sidecar-ready', (event) => {
       console.log('[Sidecar] Ready on port:', event.payload);
-      // 设置全局端口
       setSidecarPort(event.payload);
       setState({
         status: 'ready',
@@ -58,15 +55,24 @@ export function useServerStatus(): ServerStatusState {
       });
     });
 
-    // 检查当前状态
+    // 监听 sidecar 错误事件
+    const unlistenErrorPromise = listen<string>('sidecar-error', (event) => {
+      console.error('[Sidecar] Error:', event.payload);
+      setState({
+        status: 'error',
+        port: null,
+        error: event.payload,
+      });
+    });
+
+    // 检查当前状态（Sidecar 可能已经启动）
     invoke<number>('get_sidecar_port')
       .then((port) => {
         if (port) {
           setSidecarPort(port);
           setState({ status: 'ready', port });
-        } else {
-          setState({ status: 'starting', port: null });
         }
+        // 如果没有端口，保持 starting 状态，等待 sidecar-ready 事件
       })
       .catch((err) => {
         console.error('[Sidecar] Failed to get port:', err);
@@ -79,6 +85,7 @@ export function useServerStatus(): ServerStatusState {
 
     return () => {
       unlistenPromise.then((unlisten) => unlisten());
+      unlistenErrorPromise.then((unlisten) => unlisten());
     };
   }, []);
 

@@ -22,28 +22,27 @@ pub fn run() {
                 sidecar: std::sync::Mutex::new(sidecar_manager),
             });
 
-            // 只在生产环境自动启动 sidecar
-            #[cfg(not(debug_assertions))]
-            {
-                if let Some(window) = app.get_webview_window("main") {
-                    let state = window.state::<AppState>();
+            // 自动启动 Sidecar（开发模式和生产模式都启动）
+            if let Some(window) = app.get_webview_window("main") {
+                let state = window.state::<AppState>();
 
-                    // 在后台启动 sidecar
-                    std::thread::spawn(move || {
-                        let mut manager = state.sidecar.lock().unwrap();
-                        match manager.start() {
-                            Ok(port) => {
-                                tracing::info!("Sidecar auto-started on port {}", port);
-                                if let Some(port) = manager.port() {
-                                    let _ = window.emit("sidecar-ready", port);
-                                }
-                            }
-                            Err(e) => {
-                                tracing::error!("Failed to auto-start sidecar: {}", e);
+                // 在后台启动 sidecar
+                std::thread::spawn(move || {
+                    let mut manager = state.sidecar.lock().unwrap();
+                    match manager.start() {
+                        Ok(port) => {
+                            tracing::info!("Sidecar auto-started on port {}", port);
+                            if let Some(port) = manager.port() {
+                                let _ = window.emit("sidecar-ready", port);
                             }
                         }
-                    });
-                }
+                        Err(e) => {
+                            tracing::error!("Failed to auto-start sidecar: {}", e);
+                            // 通知前端启动失败
+                            let _ = window.emit("sidecar-error", e.to_string());
+                        }
+                    }
+                });
             }
 
             if cfg!(debug_assertions) {

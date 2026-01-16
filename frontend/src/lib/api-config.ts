@@ -3,8 +3,7 @@
  *
  * 处理不同环境的 API 基础 URL：
  * - 浏览器环境: 使用相对路径（由 Vite 代理处理）
- * - Tauri 开发模式: 连接到 Vite 开发服务器
- * - Tauri 生产模式: 连接到 Sidecar 动态端口
+ * - Tauri 环境（开发 + 生产）: 连接到 Sidecar 动态端口
  */
 
 // 全局端口变量类型声明
@@ -39,17 +38,12 @@ export const getApiBaseUrl = (): string => {
     return '';
   }
 
-  if (isDev()) {
-    // Tauri 开发模式: 连接到 Vite 开发服务器
-    return 'http://localhost:3000';
-  }
-
-  // Tauri 生产模式: 从全局变量获取 Sidecar 动态端口
+  // Tauri 环境（开发模式和生产模式）都使用 Sidecar
   if (window.__SIDECAR_PORT__) {
     return `http://127.0.0.1:${window.__SIDECAR_PORT__}`;
   }
 
-  // 默认: 返回空字符串，使用相对路径
+  // 默认: 返回空字符串（等待 Sidecar 启动）
   return '';
 };
 
