@@ -17,7 +17,7 @@ declare global {
  * 检测是否在 Tauri 环境中运行
  */
 export const isTauri = (): boolean => {
-  return '__TAURI__' in window;
+  return '__TAURI_INTERNALS__' in window;
 };
 
 /**
