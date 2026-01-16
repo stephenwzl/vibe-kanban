@@ -4,7 +4,7 @@
   "version": "0.0.153",
   "identifier": "com.vibekanban.app",
   "build": {
-    "beforeDevCommand": "npm run dev",
+    "beforeDevCommand": "VITE_OPEN=false npm run dev",
     "beforeBuildCommand": "npm run build",
     "devUrl": "http://localhost:3000",
     "frontendDist": "../dist"
