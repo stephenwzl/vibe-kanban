@@ -5,7 +5,7 @@ mod commands;
 mod sidecar;
 mod error;
 
-use tauri::{Manager, Emitter};
+use tauri::{Manager, Emitter, State};
 use crate::commands::AppState;
 
 fn main() {
@@ -24,9 +24,10 @@ pub fn run() {
 
             // 自动启动 Sidecar（开发模式和生产模式都启动）
             if let Some(window) = app.get_webview_window("main") {
-                // 先获取 state 的克隆，避免借用问题
-                let state = window.state::<AppState>();
                 let window_clone = window.clone();
+                // 获取 state 的句柄，避免借用 window
+                let state = window.state::<AppState>();
+                let app_handle = app.handle().clone();
 
                 // 在后台启动 sidecar
                 std::thread::spawn(move || {
