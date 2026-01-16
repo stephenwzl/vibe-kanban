@@ -23,9 +23,10 @@ pub fn run() {
                 sidecar: std::sync::Mutex::new(sidecar_manager),
             });
 
-            // 获取 state 的 Arc 副本
+            // 获取 state 的 Arc，然后提取内部的 Arc<Mutex<SidecarManager>>
             let state = app.state::<AppState>();
-            let sidecar_arc: Arc<std::sync::Mutex<sidecar::SidecarManager>> = state.inner().clone();
+            let app_state_arc = state.inner().clone();
+            let sidecar_arc = Arc::clone(&app_state_arc.sidecar);
 
             // 自动启动 Sidecar（开发模式和生产模式都启动）
             if let Some(window) = app.get_webview_window("main") {
