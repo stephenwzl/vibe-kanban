@@ -5,7 +5,7 @@ mod commands;
 mod sidecar;
 mod error;
 
-use tauri::Manager;
+use tauri::{Manager, Emitter};
 use crate::commands::AppState;
 
 fn main() {
